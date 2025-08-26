@@ -79,3 +79,4 @@ SELECT * FROM Employees WHERE Salary > 60000;
 -- Before doing:
 UPDATE Employees SET Bonus = 1000 WHERE Salary > 60000;
 ```
+---
