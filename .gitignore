@@ -14,3 +14,6 @@
 
 # NetBeans
 nbproject/
+
+# Airflow
+Airflow/
