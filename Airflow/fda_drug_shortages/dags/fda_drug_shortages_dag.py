@@ -23,8 +23,10 @@ def download_latest_shortages():
     export_date = node["export_date"]
     parts = node["partitions"]
 
-    # 2) Make dated folder
-    out_dir = os.path.join(BASE_OUT, f"export_date={export_date}")
+    # 2) Make dated folder with hour/minute subfolders
+    now = datetime.now()
+    hour_min = now.strftime("%H/%M")
+    out_dir = os.path.join(BASE_OUT, f"export_date={export_date}", hour_min)
     os.makedirs(out_dir, exist_ok=True)
 
     # 3) Download & extract each partition
@@ -49,7 +51,7 @@ def download_latest_shortages():
 with DAG(
     dag_id="raw_data_ingestion_taskflow",
     start_date=datetime(2025, 1, 1),
-    schedule="@daily",
+    schedule="*/5 * * * *",
     catchup=False,
     tags=["fda", "bronze"]
 ) as dag:

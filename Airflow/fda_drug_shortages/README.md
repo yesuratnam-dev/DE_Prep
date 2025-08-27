@@ -43,6 +43,17 @@ docker compose ps
 docker compose down
 ```
 
+### DAG Management
+
+#### Delete a DAG
+```bash
+# Delete DAG from Airflow metadata (removes all history)
+docker exec fda_airflow_standalone airflow dags delete <dag_id> --yes
+
+# Example:
+docker exec fda_airflow_standalone airflow dags delete hello_world_taskflow --yes
+```
+
 ## Components
 - `installations/`: Docker Compose configuration
 - `dags/`: Airflow DAG definitions
