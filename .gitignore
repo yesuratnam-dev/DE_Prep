@@ -14,3 +14,8 @@
 
 # NetBeans
 nbproject/
+
+# Airflow
+airflow.cfg
+logs/
+airflow-webserver.pid

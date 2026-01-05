@@ -7,6 +7,8 @@ import requests
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Container path mapped to host
 BASE_OUT = "/opt/airflow/data"
@@ -15,8 +17,19 @@ PRODUCT, ENDPOINT = "drug", "shortages"
 
 def download_latest_shortages():
     """Download and extract FDA shortage data"""
+    # Configure session with retry strategy
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[429, 500, 502, 503, 504]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    
     # 1) Read manifest
-    m = requests.get(MANIFEST_URL, timeout=60)
+    m = session.get(MANIFEST_URL, timeout=60, verify=True)
     m.raise_for_status()
     manifest = m.json()
     node = manifest["results"][PRODUCT][ENDPOINT]
@@ -31,7 +44,7 @@ def download_latest_shortages():
     saved = []
     for p in parts:
         url = p["file"]
-        z = requests.get(url, timeout=120)
+        z = session.get(url, timeout=120, verify=True)
         z.raise_for_status()
         with zipfile.ZipFile(io.BytesIO(z.content)) as zf:
             for name in zf.namelist():
