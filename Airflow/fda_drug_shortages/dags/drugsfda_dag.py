@@ -14,10 +14,10 @@ from utils.session import get_fda_manifest_node
 
 # Container path mapped to host
 BASE_OUT = "/opt/airflow/data"
-DATASET_FOLDER = "shortages"
-PRODUCT, ENDPOINT = "drug", "shortages"
+DATASET_FOLDER = "drugs_fda"
+PRODUCT, ENDPOINT = "drug", "drugsfda"
 
-def download_latest_shortages():
+def download_latest_drugs_fda():
     """Download and extract FDA shortage data"""
 
     node,session = get_fda_manifest_node(product=PRODUCT, endpoint=ENDPOINT)
@@ -49,14 +49,14 @@ def download_latest_shortages():
 
 # DAG definition
 with DAG(
-    dag_id="raw_data_ingestion_taskflow",
-    start_date=datetime(2025, 1, 1),
-    schedule="@daily",
-    catchup=False,
-    tags=["fda", "bronze", "drug_shortages"]
+        dag_id="raw_data_ingestion_task_drugsfda",
+        start_date=datetime(2025, 1, 1),
+        schedule="@daily",
+        catchup=False,
+        tags=["fda", "bronze", "drugs_fda"]
 ) as dag:
 
     download_task = PythonOperator(
-        task_id="download_fda_shortages",
-        python_callable=download_latest_shortages
+        task_id="download_drugs_fda",
+        python_callable=download_latest_drugs_fda
     )
